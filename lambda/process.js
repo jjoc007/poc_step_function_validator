@@ -48,7 +48,7 @@ exports.handler = async event => {
   } else if (action === 'end') {
     const number = event.number;
     const update = event.update;
-    const status = event.update !== 'finish' ? 'finished' : 'rollbacked';
+    const status = event.update === 'finish' ? 'finished' : 'rollbacked';
 
     if(status === 'finished' && update === 'finish') {
       return {number: number, update: update, end: true}

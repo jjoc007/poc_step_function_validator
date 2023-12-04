@@ -37,6 +37,20 @@ resource "aws_iam_policy" "lambda_logging_policy" {
   })
 }
 
+resource "aws_iam_role_policy" "event_policy" {
+  name = "process_validator_event_policy"
+  role = aws_iam_role.events_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action = "states:StartExecution",
+      Effect = "Allow",
+      Resource = [aws_sfn_state_machine.process_validator_sf.arn]
+    }]
+  })
+}
+
 resource "aws_iam_role" "step_functions_role" {
   name = "step_functions_role_poc_number_sf"
 
@@ -48,6 +62,23 @@ resource "aws_iam_role" "step_functions_role" {
         Effect = "Allow"
         Principal = {
           Service = "states.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role" "events_role" {
+  name = "events_role_poc_validator_sf"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "scheduler.amazonaws.com"
         }
       }
     ]
