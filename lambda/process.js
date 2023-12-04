@@ -19,7 +19,13 @@ exports.handler = async event => {
   console.log(`The Action is: ${action}`);
 
   if (action === 'create') {
-    const number = create();
+    let number = 0
+    if (event.parent_number) {
+      number = event.parent_number;
+      console.log(`The number was delivered: ${number}`);
+    } else {
+      number = create();
+    }
     const update = number % 2 === 0 ? 'finish' : 'rollback';
     return {number: number, update: update, status: 'in_progress'}
   } else if (action === 'execute_action'){
